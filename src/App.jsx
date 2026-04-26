@@ -123,7 +123,7 @@ const KB = 1024n;
 
     function App() {
       const [mode, setMode] = useState('SV39');
-      const [vaInput, setVaInput] = useState('0x00000000');
+      const [vaInput, setVaInput] = useState('00000000');
       const [memoryDB, setMemoryDB] = useState(INITIAL_DB);
       
       const [explorerPath, setExplorerPath] = useState([INITIAL_DB['SV39'].SATP_PPN]); 
@@ -158,7 +158,7 @@ const KB = 1024n;
         setSelectedEntry(null);
         setTranslationResult(null);
         setScaleIndex(SCALES[mode].length - 1); 
-        setVaInput(mode === 'SV39' ? '0x00000000' : '0x00000000');
+        setVaInput(mode === 'SV39' ? '00000000' : '00000000');
       }, [mode]);
 
       useEffect(() => {
@@ -1372,19 +1372,21 @@ const KB = 1024n;
                                                     const ppn1 = Number((pa >> 21n) & 0x1FFn);
                                                     const ppn0 = Number((pa >> 12n) & 0x1FFn);
                                                     const off = Number(pa & 0xFFFn);
-                                                    const isL1Leaf = leafLevel === 0;
-                                                    const isL2Leaf = leafLevel === 1;
+                                                    
+                                                    const isGigapage = leafLevel === 2;
+                                                    const isMegapage = leafLevel === 1;
+                                                    
                                                     const vpn1 = Number((va >> 21n) & 0x1FFn);
                                                     const vpn0 = Number((va >> 12n) & 0x1FFn);
                                                     return (
                                                         <>
                                                             <BitBox label="PPN[2]" bits={26} value={formatValue(ppn2, bitDiagramMode, 26)} color="bg-amber-100" bitRange={[30, 55]} />
-                                                            {isL1Leaf ? (
+                                                            {isGigapage ? (
                                                                 <BitBox label="VPN[1] (VA)" bits={9} value={formatValue(vpn1, bitDiagramMode, 9)} color="bg-indigo-100" bitRange={[21, 29]} />
                                                             ) : (
                                                                 <BitBox label="PPN[1]" bits={9} value={formatValue(ppn1, bitDiagramMode, 9)} color="bg-amber-100" bitRange={[21, 29]} />
                                                             )}
-                                                            {(isL1Leaf || isL2Leaf) ? (
+                                                            {(isGigapage || isMegapage) ? (
                                                                 <BitBox label="VPN[0] (VA)" bits={9} value={formatValue(vpn0, bitDiagramMode, 9)} color="bg-indigo-100" bitRange={[12, 20]} />
                                                             ) : (
                                                                 <BitBox label="PPN[0]" bits={9} value={formatValue(ppn0, bitDiagramMode, 9)} color="bg-amber-100" bitRange={[12, 20]} />
@@ -1400,12 +1402,13 @@ const KB = 1024n;
                                                     const ppn1 = Number((pa >> 22n) & 0xFFFn);
                                                     const ppn0 = Number((pa >> 12n) & 0x3FFn);
                                                     const off = Number(pa & 0xFFFn);
-                                                    const isL1Leaf = leafLevel === 0;
+                                                    
+                                                    const isMegapage = leafLevel === 1;
                                                     const vpn0 = Number((va >> 12n) & 0x3FFn);
                                                     return (
                                                         <>
                                                             <BitBox label="PPN[1]" bits={12} value={formatValue(ppn1, bitDiagramMode, 12)} color="bg-amber-100" bitRange={[22, 33]} />
-                                                            {isL1Leaf ? (
+                                                            {isMegapage ? (
                                                                 <BitBox label="VPN[0] (VA)" bits={10} value={formatValue(vpn0, bitDiagramMode, 10)} color="bg-indigo-100" bitRange={[12, 21]} />
                                                             ) : (
                                                                 <BitBox label="PPN[0]" bits={10} value={formatValue(ppn0, bitDiagramMode, 10)} color="bg-amber-100" bitRange={[12, 21]} />
@@ -1432,8 +1435,24 @@ const KB = 1024n;
                            </div>
                         </div>
                         <div className="flex-1 bg-white/40 p-3 rounded-lg border border-amber-200/60 text-[11px] text-stone-600 leading-relaxed italic">
-                           Hardware traverses the page tables using VPN fields from the Virtual Address to find the corresponding PPN, which is then concatenated with the Offset.
-                           Formula: PA = (PPN {'<<'} 12) | Offset
+                           {(() => {
+                               const leafLevel = translationResult.leafLevel;
+                               const isSV39 = mode === 'SV39';
+                               const isGigapage = isSV39 && leafLevel === 2;
+                               const isMegapage = (isSV39 && leafLevel === 1) || (!isSV39 && leafLevel === 1);
+                               const sizeText = isGigapage ? '1GB (Gigapage)' : (isMegapage ? (isSV39 ? '2MB (Megapage)' : '4MB (Megapage)') : '4KB (Page)');
+                               const formula = isGigapage ? 'PA = (PPN[2] << 30) | (VPN[1:0] << 12) | Offset' :
+                                              isMegapage ? (isSV39 ? 'PA = (PPN[2:1] << 21) | (VPN[0] << 12) | Offset' : 'PA = (PPN[1] << 22) | (VPN[0] << 12) | Offset') :
+                                              'PA = (PPN << 12) | Offset';
+                               return (
+                                   <>
+                                       This translation target is a <span className="font-bold text-amber-800">{sizeText}</span>. 
+                                       The physical address is constructed by taking the PPN from the PTE and merging it with the untranslated VPN bits from the VA.
+                                       <br />
+                                       <span className="font-bold">Hardware Formula:</span> <code className="font-mono font-bold text-amber-900 ml-1">{formula}</code>
+                                   </>
+                               );
+                           })()}
                         </div>
                       </div>
                     </div>
@@ -1678,11 +1697,11 @@ const KB = 1024n;
                            This PTE points to physical page frame 0x{selectedEntry.ppn.toString(16).toUpperCase()}. 
                            The mapping size is {isGigapage ? '1GB (Gigapage)' : (isMegapage ? (mode === 'SV39' ? '2MB (Megapage)' : '4MB (Megapage)') : '4KB (Page)')}.
                            <br />
-                           <span className="font-bold">Formula:</span> {
-                             isGigapage ? `PA = (PPN[2] << 30) | (VPN[1:0] << 12) | Offset` :
-                             isMegapage ? (mode === 'SV39' ? `PA = (PPN[2:1] << 21) | (VPN[0] << 12) | Offset` : `PA = (PPN[1] << 22) | (VPN[0] << 12) | Offset`) :
-                             `PA = (PPN << 12) | Offset`
-                           }
+                           <span className="font-bold">Hardware Formula:</span> <code className={`font-mono font-bold ${t.textVeryDark} ml-1`}>
+                             {isGigapage ? `PA = (PPN[2] << 30) | (VPN[1:0] << 12) | Offset` :
+                              isMegapage ? (mode === 'SV39' ? `PA = (PPN[2:1] << 21) | (VPN[0] << 12) | Offset` : `PA = (PPN[1] << 22) | (VPN[0] << 12) | Offset`) :
+                              `PA = (PPN << 12) | Offset`}
+                           </code>
                         </div>
                       </div>
                     </div>
@@ -1841,7 +1860,7 @@ const KB = 1024n;
         const [flags, setFlags] = useState({ v: 1, r: 1, w: 1, x: 0, u: 0, g: 0, a: 1, d: 1 });
         const [idxFormat, setIdxFormat] = useState('DEC');
         const [startIdxInput, setStartIdxInput] = useState('0');
-        const [endIdxInput, setEndIdxInput] = useState('15');
+        const [endIdxInput, setEndIdxInput] = useState(mode === 'SV32' ? '1023' : '511');
         const [updatePa, setUpdatePa] = useState(true);
         const [startPaInput, setStartPaInput] = useState('0');
         
@@ -2236,7 +2255,12 @@ const KB = 1024n;
                                  <div className="flex flex-col items-center justify-center gap-1 px-1 min-w-[60px] -mt-2">
                                      {parentEntry && (
                                          <span className="font-mono text-[9px] font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded border border-stone-200 shadow-sm animate-in fade-in slide-in-from-bottom-1" title="Index used in parent table">
-                                             Idx: 0x{parentEntry.index.toString(16).toUpperCase()}
+                                             Idx: {(() => {
+                                                 const val = parentEntry.index;
+                                                 if (indexFormat === 'HEX') return `0x${val.toString(16).toUpperCase()}`;
+                                                 if (indexFormat === 'BIN') return `0b${val.toString(2).padStart(mode === 'SV32' ? 10 : 9, '0')}`;
+                                                 return val.toString(10);
+                                             })()}
                                          </span>
                                      )}
                                      <ChevronRight className="w-5 h-5 text-stone-300" />
