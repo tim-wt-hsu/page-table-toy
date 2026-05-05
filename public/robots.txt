@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tim-wt-hsu.github.io/page-table-toy/sitemap.xml

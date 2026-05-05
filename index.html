@@ -12,23 +12,36 @@
       gtag('js', new Date());
       gtag('config', 'G-E0K4FL9BZK');
     </script>
-    <title>Page Table Toy: Interactive RISC-V Virtual Address Translation Visualizer</title>
-    <meta name="description" content="Interactive RISC-V page table visualization tool supporting Sv32 and Sv39 modes. Visualize address translation, MMU mechanisms, and virtual memory concepts in your browser." />
-    <meta name="keywords" content="RISC-V, Page Table, Address Translation, Sv32, Sv39, MMU, Computer Architecture, Virtual Memory, Virtual Address, Physical Address, Interactive, Visualization" />
+    <title>Page Table Toy | RISC-V SV32 & SV39 Virtual Address Translation Visualizer</title>
+    <meta name="description" content="A professional interactive visualizer for RISC-V virtual address translation. Explore Sv32 and Sv39 page table walks, MMU mechanisms, and hardware-level memory mapping. Ideal for OS developers, kernel hackers, and computer architecture students." />
+    <meta name="keywords" content="RISC-V, Page Table, Address Translation, Sv32, Sv39, MMU Simulator, Computer Architecture, Virtual Memory, Kernel Development, OS textbook, Page Table Entry, PTE, TLB, Virtual to Physical mapping" />
 
-    <meta property="og:title" content="Page Table Toy: Interactive RISC-V Address Translation Visualizer" />
-    <meta property="og:description" content="Explore and visualize RISC-V Sv32/Sv39 virtual address translation with this interactive tool." />
+    <meta property="og:title" content="RISC-V Page Table Toy - Virtual Address Translation Visualizer" />
+    <meta property="og:description" content="Deep dive into RISC-V virtual memory. Visualize SV32/SV39 page table hierarchies and address translation step-by-step." />
     <meta property="og:url" content="https://tim-wt-hsu.github.io/page-table-toy" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://tim-wt-hsu.github.io/page-table-toy/og-image.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Page Table Toy: RISC-V Visualizer" />
-    <meta name="twitter:description" content="Interactive RISC-V page table visualization tool." />
+    <meta name="twitter:title" content="RISC-V Page Table Toy Visualizer" />
+    <meta name="twitter:description" content="Interactive visualizer for RISC-V Sv32 and Sv39 address translation." />
 
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static content for SEO crawlers -->
+      <div style="display:none;">
+        <h1>Page Table Toy: RISC-V Virtual Address Translation Visualizer</h1>
+        <p>This interactive tool allows users to explore how RISC-V systems translate virtual addresses to physical addresses using page tables.</p>
+        <h2>Supported RISC-V Paging Modes:</h2>
+        <ul>
+          <li>Sv32: 32-bit virtual addressing with 2-level page tables.</li>
+          <li>Sv39: 39-bit virtual addressing with 3-level page tables.</li>
+        </ul>
+        <h2>Key Features:</h2>
+        <p>Step-by-step page table walk, Interactive PTE (Page Table Entry) modification, Physical memory viewport visualization, support for Huge Pages (Gigapages and Megapages).</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

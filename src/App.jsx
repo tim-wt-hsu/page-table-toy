@@ -2064,15 +2064,22 @@ const KB = 1024n;
                 <h1 className="text-2xl font-bold text-stone-900 mb-2">
                   Page Table Toy: RISC-V Virtual Address Translation Visualizer
                 </h1>
-                <p className="text-stone-600 text-sm">
-                  The right side is the <strong>Physical Memory Viewport</strong>. Use the <strong>+ / - buttons</strong> to zoom into micro views. Drag to navigate across the entire {mode === 'SV39' ? '2TB' : '16GB'} physical memory space.
-                  <button 
-                    onClick={() => setShowGuide(!showGuide)}
-                    className="ml-3 text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-800 border-b border-indigo-200 hover:border-indigo-600 transition-all"
-                  >
-                    {showGuide ? '[ Hide System Guide ]' : '[ Show System Guide ]'}
-                  </button>
-                </p>
+                <div className="space-y-2">
+                  <p className="text-stone-700 text-sm leading-relaxed max-w-4xl">
+                    Learn how <strong>RISC-V virtual memory</strong> and page tables work (Sv32 & Sv39) through interactive visualizations. 
+                    This tool shows you exactly how virtual addresses are mapped to physical memory, step by step.
+                  </p>
+                  <p className="text-stone-500 text-[12px] leading-relaxed">
+                    <span className="font-bold text-stone-400 mr-2 uppercase tracking-tighter">Tip:</span>
+                    The right side is the <strong>Physical Memory Viewport</strong>. Use the <strong>+ / - buttons</strong> to zoom into micro views. Drag to navigate.
+                    <button 
+                      onClick={() => setShowGuide(!showGuide)}
+                      className="ml-3 text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-800 border-b border-indigo-200 hover:border-indigo-600 transition-all inline-block"
+                    >
+                      {showGuide ? '[ Hide System Guide ]' : '[ Show System Guide ]'}
+                    </button>
+                  </p>
+                </div>
                 
                 {showGuide && (
                   <div className="mt-6 p-6 bg-stone-50 border border-stone-200 rounded-lg animate-in fade-in slide-in-from-top-2 duration-300">
