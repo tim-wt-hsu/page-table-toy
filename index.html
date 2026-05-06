@@ -15,6 +15,23 @@
     <title>Page Table Toy | RISC-V SV32 & SV39 Virtual Address Translation Visualizer</title>
     <meta name="description" content="A professional interactive visualizer for RISC-V virtual address translation. Explore Sv32 and Sv39 page table walks, MMU mechanisms, and hardware-level memory mapping. Ideal for OS developers, kernel hackers, and computer architecture students." />
     <meta name="keywords" content="RISC-V, Page Table, Address Translation, Sv32, Sv39, MMU Simulator, Computer Architecture, Virtual Memory, Kernel Development, OS textbook, Page Table Entry, PTE, TLB, Virtual to Physical mapping" />
+    <link rel="canonical" href="https://tim-wt-hsu.github.io/page-table-toy/" />
+
+    <!-- Structured Data for Software Application -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Page Table Toy",
+      "operatingSystem": "Web",
+      "applicationCategory": "EducationalApplication",
+      "description": "Interactive RISC-V virtual address translation and page table visualizer for SV32 and SV39 modes.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
 
     <meta property="og:title" content="RISC-V Page Table Toy - Virtual Address Translation Visualizer" />
     <meta property="og:description" content="Deep dive into RISC-V virtual memory. Visualize SV32/SV39 page table hierarchies and address translation step-by-step." />
@@ -28,9 +45,10 @@
 
   </head>
   <body>
-    <div id="root">
-      <!-- Static content for SEO crawlers -->
-      <div style="display:none;">
+    <div id="root"></div>
+    <noscript>
+      <!-- Static content for crawlers and non-JS users -->
+      <div style="padding: 20px;">
         <h1>Page Table Toy: RISC-V Virtual Address Translation Visualizer</h1>
         <p>This interactive tool allows users to explore how RISC-V systems translate virtual addresses to physical addresses using page tables.</p>
         <h2>Supported RISC-V Paging Modes:</h2>
@@ -41,7 +59,7 @@
         <h2>Key Features:</h2>
         <p>Step-by-step page table walk, Interactive PTE (Page Table Entry) modification, Physical memory viewport visualization, support for Huge Pages (Gigapages and Megapages).</p>
       </div>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
